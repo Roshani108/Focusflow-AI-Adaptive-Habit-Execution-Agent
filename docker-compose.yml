@@ -1,0 +1,122 @@
+services:
+  # ============================================================================
+  # Primary PostgreSQL Database
+  # ============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: focusflow_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-focusflow_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-focusflow_password}
+      POSTGRES_DB: ${POSTGRES_DB:-focusflow_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-focusflow_user} -d ${POSTGRES_DB:-focusflow_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - focusflow_net
+
+  # ============================================================================
+  # Redis Cache & Background Queue
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: focusflow_redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - focusflow_net
+
+  # ============================================================================
+  # Python FastAPI Backend API
+  # ============================================================================
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    container_name: focusflow_api
+    restart: unless-stopped
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      DEBUG: ${DEBUG:-False}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-focusflow_user}:${POSTGRES_PASSWORD:-focusflow_password}@postgres:5432/${POSTGRES_DB:-focusflow_db}
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: ${JWT_SECRET:-supersecretjwtkeyfocusflowai2026productionreadysecurekey}
+      AI_PROVIDER: ${AI_PROVIDER:-mock}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      CORS_ORIGINS: "*"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - focusflow_net
+
+  # ============================================================================
+  # Node.js Notification & Background Worker
+  # ============================================================================
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    container_name: focusflow_notifications
+    restart: unless-stopped
+    environment:
+      PORT: 4000
+      NODE_ENV: ${ENVIRONMENT:-production}
+      FASTAPI_API_URL: http://api:8000/api
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "4000:4000"
+    depends_on:
+      api:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    networks:
+      - focusflow_net
+
+  # ============================================================================
+  # React Web Frontend (Nginx Production Server)
+  # ============================================================================
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: focusflow_web
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    networks:
+      - focusflow_net
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  focusflow_net:
+    driver: bridge

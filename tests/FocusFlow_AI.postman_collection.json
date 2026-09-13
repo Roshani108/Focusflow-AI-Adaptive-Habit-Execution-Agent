@@ -1,0 +1,153 @@
+{
+  "info": {
+    "name": "FocusFlow AI API Collection",
+    "description": "Production-ready Postman collection for FocusFlow AI REST APIs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login Demo User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.data.access_token) {",
+                  "    pm.collectionVariables.set('accessToken', jsonData.data.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@focusflow.dev\",\n  \"password\": \"DemoPassword123!\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard & Analytics",
+      "item": [
+        {
+          "name": "Get Dashboard Summary",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/dashboard"
+          }
+        },
+        {
+          "name": "Get Verified Analytics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/analytics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Goals & AI Planning",
+      "item": [
+        {
+          "name": "List Goals",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/goals"
+          }
+        },
+        {
+          "name": "Create Goal",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Prepare for System Design Interview\",\n  \"description\": \"Master distributed systems and caching\",\n  \"category\": \"Career\",\n  \"deadline\": \"2026-10-30T00:00:00Z\",\n  \"target_hours\": 40.0,\n  \"current_skill\": \"Advanced\",\n  \"preferred_days\": \"Monday,Tuesday,Wednesday,Thursday,Friday\"\n}"
+            },
+            "url": "{{baseUrl}}/goals"
+          }
+        },
+        {
+          "name": "Generate AI Plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"goal\": \"Prepare for System Design Interview in 4 weeks\",\n  \"deadline_days\": 28,\n  \"daily_available_hours\": 2.0,\n  \"current_skill\": \"Advanced\"\n}"
+            },
+            "url": "{{baseUrl}}/goals/1/generate-plan"
+          }
+        },
+        {
+          "name": "Trigger Smart Replanning",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/goals/1/replan"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "item": [
+        {
+          "name": "List Tasks (Filtered)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/tasks?status=TODO"
+          }
+        },
+        {
+          "name": "Complete Task",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/tasks/4/complete?actual_minutes=75"
+          }
+        }
+      ]
+    }
+  ]
+}
