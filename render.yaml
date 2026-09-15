@@ -1,0 +1,30 @@
+services:
+  # 1. FastAPI Python Backend Service
+  - type: web
+    name: focusflow-api
+    runtime: docker
+    dockerContext: ./services/api
+    dockerfilePath: ./services/api/Dockerfile
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: AI_PROVIDER
+        value: mock
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: JWT_SECRET
+        generateValue: true
+
+  # 2. React Web Frontend Service
+  - type: web
+    name: focusflow-web
+    runtime: docker
+    dockerContext: ./apps/web
+    dockerfilePath: ./apps/web/Dockerfile
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://focusflow-api.onrender.com/api
