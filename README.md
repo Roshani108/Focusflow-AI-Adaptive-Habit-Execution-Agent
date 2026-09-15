@@ -6,22 +6,36 @@
 [![Docker Validation](https://github.com/your-username/focusflow-ai/actions/workflows/docker.yml/badge.svg)](https://github.com/your-username/focusflow-ai/actions/workflows/docker.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-indigo.svg)](https://opensource.org/licenses/MIT)
 
-FocusFlow AI is a production-style, cross-platform productivity and autonomous goal-execution platform engineered to demonstrate advanced full-stack competencies for a **Frontend / React + Python Full Stack Engineer** role.
+---
 
-A user enters an ambitious goal (e.g. *"Prepare for Senior Full Stack Engineer Interview in 6 weeks"*), and FocusFlow AI's multi-stage agent pipeline analyzes feasibility, breaks it down into sequential milestones, assigns realistic time estimates and priorities, calendar-schedules daily tasks based on available capacity, tracks verified completion velocity, and **autonomously replans remaining work when tasks are missed or overdue without violating the final deadline**.
+## 📌 Project Definition
+**FocusFlow AI** is an autonomous, cross-platform productivity and goal-management platform that transforms ambitious high-level objectives into structured, capacity-aware daily execution roadmaps.
 
 ---
 
-## 🚀 Live Demo Credentials
+## 🎯 Project Objectives (2-Line Summary)
+1. **Autonomous Capacity-Aware Scheduling**: Autonomously decomposes complex goals into milestone-driven daily tasks balanced strictly against personal time capacity and cognitive focus limits.  
+2. **Dynamic Real-World Replanning**: Intelligently detects overdue tasks and redistributes remaining work forward across future available days without violating final deadlines or causing burnout.
 
-For local evaluation or interview presentation, the database comes pre-seeded with rich, realistic data:
+---
 
-| Field | Demo Credential |
-|---|---|
-| **Email** | `demo@focusflow.dev` |
-| **Password** | `DemoPassword123!` |
-| **Active Goals** | 2 Full Roadmaps (Interview Prep & Full Stack SaaS) |
-| **Tasks Seeded** | 24 Tasks (Completed, Scheduled Today, and Overdue for replanning) |
+## 📖 Project Description (~200 Words)
+FocusFlow AI is an autonomous, production-grade productivity and goal-management platform designed to transform ambitious long-term objectives into structured, capacity-aware daily execution plans. Rather than functioning as a standard to-do list or an unconstrained chatbot, FocusFlow AI operates through a deterministic multi-stage agent pipeline: analyzing goal feasibility, decomposing objectives into sequential milestones, bounding task durations to focused cognitive blocks, and scheduling workload strictly within the user’s configured daily capacity and active study days. When real-world disruptions cause missed or overdue deadlines, the built-in Smart Replanning Engine autonomously calculates remaining capacity and redistributes pending tasks forward without exceeding daily limits or violating final deadlines.
+
+Engineered to showcase full-stack software architecture competencies, FocusFlow AI unites a high-performance Python FastAPI backend, a responsive React 18 web client, a cross-platform React Native mobile app, and an asynchronous Node.js background reminder daemon. The system incorporates enterprise-grade practices including JWT token rotation, relational database normalization with PostgreSQL and Alembic migrations, Redis caching, comprehensive automated test suites, Docker container orchestration, and GitHub Actions CI/CD pipelines. FocusFlow AI bridges the gap between vision and daily execution, delivering an intelligent, burnout-free personal productivity copilot.
+
+---
+
+## 🌐 Live Access & Demo Credentials
+
+| Resource | URL / Access | Note |
+|---|---|---|
+| **Public Live Link** | [https://full-rabbits-beg.loca.lt](https://full-rabbits-beg.loca.lt) | Tunnel password / IP: `210.89.61.42` |
+| **Local Web Client** | [http://localhost:3000](http://localhost:3000) (or `:5173`) | Native React 18 Single Page App |
+| **FastAPI Swagger API** | [http://localhost:8000/docs](http://localhost:8000/docs) | Interactive OpenAPI 3.0 Documentation |
+| **Demo Email** | `demo@focusflow.dev` | Click *"Use Demo Account"* on login |
+| **Demo Password** | `DemoPassword123!` | Pre-seeded with roadmaps and metrics |
+
 
 ---
 
