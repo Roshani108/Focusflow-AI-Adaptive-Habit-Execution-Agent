@@ -1,18 +1,40 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { APIResponse } from "../types";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
+export const getBaseUrl = (): string => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envUrl && !envUrl.includes("localhost:8000")) {
+    return envUrl;
+  }
+
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("focusflow_api_url");
+    if (saved) return saved;
+
+    const hostname = window.location.hostname;
+    if (hostname.includes("onrender.com")) {
+      const match = hostname.match(/^focusflow-web(-[a-z0-9]+)?\.onrender\.com$/);
+      if (match && match[1]) {
+        return `https://focusflow-api${match[1]}.onrender.com/api`;
+      }
+      return "https://focusflow-api.onrender.com/api";
+    }
+  }
+
+  return envUrl || "http://localhost:8000/api";
+};
 
 export const apiClient = axios.create({
-  baseURL: BASE_URL,
+  baseURL: getBaseUrl(),
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Request interceptor injecting Bearer token
+// Request interceptor injecting dynamic Bearer token and baseURL
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    config.baseURL = getBaseUrl();
     const token = localStorage.getItem("focusflow_access_token");
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -71,7 +93,7 @@ apiClient.interceptors.response.use(
 
       try {
         const refreshResponse = await axios.post<APIResponse<{ access_token: string; refresh_token: string }>>(
-          `${BASE_URL}/auth/refresh`,
+          `${getBaseUrl()}/auth/refresh`,
           { refresh_token: refreshToken }
         );
 

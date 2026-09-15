@@ -34,6 +34,29 @@ async def lifespan(app: FastAPI):
     try:
         Base.metadata.create_all(bind=engine)
         logger.info("Database tables verified.")
+
+        # Auto-seed demo user if not present
+        try:
+            from app.models import User
+            from app.database import SessionLocal
+            db = SessionLocal()
+            try:
+                demo_user = db.query(User).filter(User.email == "demo@focusflow.dev").first()
+                if not demo_user:
+                    logger.info("Demo user not found. Auto-seeding initial data...")
+                    try:
+                        from seed import seed_database
+                        seed_database()
+                    except ImportError:
+                        from .seed import seed_database
+                        seed_database()
+                    logger.info("Demo data successfully seeded.")
+                else:
+                    logger.info("Demo user already exists.")
+            finally:
+                db.close()
+        except Exception as seed_err:
+            logger.warning(f"Auto-seed check encountered non-fatal error: {seed_err}")
     except Exception as e:
         logger.error(f"Failed to auto-create tables: {e}")
     yield

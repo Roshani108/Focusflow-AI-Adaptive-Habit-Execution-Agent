@@ -25,6 +25,9 @@ services:
     dockerfilePath: ./apps/web/Dockerfile
     plan: free
     healthCheckPath: /
+    dockerBuildArgs:
+      - key: VITE_API_BASE_URL
+        value: https://focusflow-api.onrender.com/api
     envVars:
       - key: VITE_API_BASE_URL
         value: https://focusflow-api.onrender.com/api

@@ -4,6 +4,7 @@ import { Zap, Sparkles, Mail, Lock, ArrowRight } from "lucide-react";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import { useAuth } from "../context/AuthContext";
+import { getBaseUrl } from "../api/client";
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -30,8 +31,12 @@ export const LoginPage: React.FC = () => {
       await login(email, password);
       navigate("/dashboard");
     } catch (err: any) {
-      const msg = err.response?.data?.error?.message || err.response?.data?.detail || "Invalid email or password.";
-      setError(msg);
+      if (!err.response) {
+        setError(`Cannot reach backend at ${getBaseUrl()}. If on Render free tier, the server may be waking up from sleep (wait ~60s and retry).`);
+      } else {
+        const msg = err.response?.data?.error?.message || err.response?.data?.detail || "Invalid email or password.";
+        setError(msg);
+      }
     } finally {
       setIsLoading(false);
     }

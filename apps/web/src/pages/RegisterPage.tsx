@@ -4,6 +4,7 @@ import { Zap, Mail, Lock, User as UserIcon, ArrowRight } from "lucide-react";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import { useAuth } from "../context/AuthContext";
+import { getBaseUrl } from "../api/client";
 
 export const RegisterPage: React.FC = () => {
   const [fullName, setFullName] = useState("");
@@ -27,8 +28,12 @@ export const RegisterPage: React.FC = () => {
       });
       navigate("/dashboard");
     } catch (err: any) {
-      const msg = err.response?.data?.error?.message || err.response?.data?.detail || "Registration failed.";
-      setError(msg);
+      if (!err.response) {
+        setError(`Cannot reach backend at ${getBaseUrl()}. If on Render free tier, the server may be waking up from sleep (wait ~60s and retry).`);
+      } else {
+        const msg = err.response?.data?.error?.message || err.response?.data?.detail || "Registration failed.";
+        setError(msg);
+      }
     } finally {
       setIsLoading(false);
     }
