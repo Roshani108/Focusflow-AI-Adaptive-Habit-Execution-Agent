@@ -2,26 +2,30 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { APIResponse } from "../types";
 
 export const getBaseUrl = (): string => {
-  const envUrl = import.meta.env.VITE_API_BASE_URL;
-  if (envUrl && !envUrl.includes("localhost:8000")) {
-    return envUrl;
-  }
-
   if (typeof window !== "undefined") {
     const saved = localStorage.getItem("focusflow_api_url");
     if (saved) return saved;
 
     const hostname = window.location.hostname;
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      return import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
+    }
+
     if (hostname.includes("onrender.com")) {
       const match = hostname.match(/^focusflow-web(-[a-z0-9]+)?\.onrender\.com$/);
       if (match && match[1]) {
         return `https://focusflow-api${match[1]}.onrender.com/api`;
       }
-      return "https://focusflow-api.onrender.com/api";
+      return "https://focusflow-api-txfs.onrender.com/api";
     }
   }
 
-  return envUrl || "http://localhost:8000/api";
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envUrl && !envUrl.includes("localhost:8000") && !envUrl.includes("focusflow-api.onrender.com/api")) {
+    return envUrl;
+  }
+
+  return "https://focusflow-api-txfs.onrender.com/api";
 };
 
 export const apiClient = axios.create({

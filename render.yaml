@@ -27,7 +27,7 @@ services:
     healthCheckPath: /
     dockerBuildArgs:
       - key: VITE_API_BASE_URL
-        value: https://focusflow-api.onrender.com/api
+        value: https://focusflow-api-txfs.onrender.com/api
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://focusflow-api.onrender.com/api
+        value: https://focusflow-api-txfs.onrender.com/api
